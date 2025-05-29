@@ -17,15 +17,25 @@ router = APIRouter(
 
 @router.get("/")
 @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
-async def get_youths( request: Request, db: Session = Depends(get_db))->list[YouthResponse]: 
+async def get_youths(request: Request, db: Session = Depends(get_db))->list[YouthResponse]: 
     """Get all youths 
     Args:
         request: FastAPI Request object
         db: Database session
     Returns:
         List of YouthResponse objects
+    Raises:
+        HTTPException: If sabha_center_id is not provided
     """
-    youths = get_all_youths(db)
+    sabha_center_id = request.query_params.get("sabha_center_id")
+    if not sabha_center_id:
+        raise HTTPException(
+            status_code=400,
+            detail="sabha_center_id query parameter is required"
+        )
+    
+    youths = get_all_youths(sabha_center_id, db)
+    print(youths)
     youths_pydanticmodel = [sqlalchemy_to_pydantic_dict(youth) for youth in youths]
     return [YouthResponse.model_validate(youth) for youth in youths_pydanticmodel]
 

@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from database.database import Base
 from sqlalchemy.orm import relationship
+
 class Karyakarta(Base):
     __tablename__ = "karyakartas"
 

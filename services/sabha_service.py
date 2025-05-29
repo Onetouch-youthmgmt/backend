@@ -4,9 +4,9 @@ from models.sabha import Sabha
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-def get_all_sabhas(db:Session):
+def get_all_sabhas(sabha_center_id:int, db:Session):
     try:
-        sabhas = db.query(Sabha).all()
+        sabhas = db.query(Sabha).filter(Sabha.sabha_center_id == sabha_center_id).all()
         return sabhas
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting sabhas: {str(e)}")
@@ -33,7 +33,7 @@ def create_new_sabha(sabha:SabhaCreate, db:Session):
         db.add(new_sabha)
         db.commit()
         db.refresh(new_sabha)
-        return {"message": f"Sabha with topic {sabha.topic} and for date {sabha.date} created successfully"}
+        return {"sabha_id": new_sabha.id, "message": f"Sabha with topic {sabha.topic} and for date {sabha.date} created successfully"}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating sabha: {str(e)}")

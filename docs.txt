@@ -1,0 +1,89 @@
+Request
+JSON -> pydantic converts to python object->Validated data -> SQLAlchemy model -> Database
+
+Response
+Database -> SQLAlchemy model -> python object -> pydantic converts to JSON
+
+Pydantic -> Validated data
+SQLAlchemy -> Database interaction
+
+karyakarta model
+{
+    "email": "vthakar3@gmail.com",
+    "hashed_password": "Varun123",
+    "role": "admin"
+}
+{
+    "email": "dasNirdosh@gmail.com",
+    "hashed_password": "Nirdosh123",
+    "role": "karyakarta"
+}
+
+youth model
+{
+ "first_name": "Raj",
+    "last_name": "Waghela",
+    "email": "rwaghela@test.com",
+    "phone_number": "1234567890",
+    "birth_date": "2021-01-01",
+    "origin_city_india": "Mumbai",
+    "current_city_germany": "Magdeburg",
+    "educational_field": "data science",
+    "karyakarta_id": 1,
+    "is_active": true,
+    "created_at": "2021-01-01",
+    "sabha_center_ids": [1,2]
+}
+{
+ "first_name": "Bhupendra",
+    "last_name": "Sharma",
+    "email": "bsharma@test.com",
+    "phone_number": "1234567890",
+    "birth_date": "2021-01-01",
+    "origin_city_india": "Mumbai",
+    "current_city_germany": "Magdeburg",
+    "educational_field": "Accounting",
+    "karyakarta_id": 1,
+    "is_active": true,
+    "created_at": "2021-01-01",
+    "sabha_center_ids": [1,2, 3]
+}
+
+
+sabha center data [
+{
+    "name": "Berlin friday sabha",
+    "city": "Berlin",
+    "address": "Wuli Schule",
+    "responsible_person": "Nirdosh Parmar",
+    "contact_number": "1234567890"
+},
+{
+    "name": "Berlin Sunday sabha",
+    "city": "Kleinmachnow",
+    "address": "ImTal 10",
+    "responsible_person": "Manibhai",
+    "contact_number": "1234567890"
+},
+{
+    "name": "Magdeburg friday sabha",
+    "city": "Magdeburg",
+    "address": "Uni 2",
+    "responsible_person": "Varun Thaker",
+    "contact_number": "9876543210"
+}]
+
+sabha model
+{
+    "topic": "Sabha 1",
+    "sabha_center_id": 1,
+    "speaker_name": "Raj Waghela and Bhupendra Sharma",
+    "date": "2021-01-01",
+}
+{
+    "topic": "Sabha 2",
+    "sabha_center_id": 2,
+    "speaker_name": "Mananbhai and Manojbhai",
+    "date": "2021-01-01",
+}
+
