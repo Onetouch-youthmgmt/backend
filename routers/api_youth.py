@@ -16,7 +16,7 @@ router = APIRouter(
 )
 
 @router.get("/")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def get_youths(request: Request, db: Session = Depends(get_db))->list[YouthResponse]: 
     """Get all youths 
     Args:
@@ -40,7 +40,7 @@ async def get_youths(request: Request, db: Session = Depends(get_db))->list[Yout
     return [YouthResponse.model_validate(youth) for youth in youths_pydanticmodel]
 
 @router.get("/{youth_id}")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def get_youth(request: Request, youth_id: int, db: Session = Depends(get_db))->YouthResponse:
     """Get a youth by ID
     Args:
@@ -56,7 +56,7 @@ async def get_youth(request: Request, youth_id: int, db: Session = Depends(get_d
     return YouthResponse.model_validate(youth_pydanticmodel)
 
 @router.delete('/{youth_id}')
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def deactivate_youth_by_id(request: Request, youth_id: int, db: Session = Depends(get_db))->dict:
     """Deactivate a youth by ID
     Args:
@@ -69,7 +69,7 @@ async def deactivate_youth_by_id(request: Request, youth_id: int, db: Session = 
     return deactivate_youth(youth_id, db)
 
 @router.post('/')
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def create_youth(request: Request, youth: YouthCreate, db: Session = Depends(get_db))->dict:
     """Create a new youth
     Args:
@@ -82,7 +82,7 @@ async def create_youth(request: Request, youth: YouthCreate, db: Session = Depen
     return create_new_youth(youth, db)
     
 @router.put('/{youth_id}')
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def update_youth(request: Request, youth_id: int, youth: YouthCreate, db: Session = Depends(get_db))->dict:
     """Update a youth by ID
     Args:

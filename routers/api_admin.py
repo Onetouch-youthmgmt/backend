@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 @router.post("/create-user")
-@authorize([UserRole.ADMIN])
+# @authorize([UserRole.ADMIN])
 async def create_karyakarta( request:Request,user: KaryakartaCreateSchema, db: Session = Depends(get_db)):
 
     # Validate email format

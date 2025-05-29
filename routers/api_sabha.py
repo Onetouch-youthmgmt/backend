@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 @router.get("/")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def get_sabhas(request: Request, db: Session = Depends(get_db))->list[SabhaResponse]:
     """Get all sabhas
     Args:
@@ -33,7 +33,7 @@ async def get_sabhas(request: Request, db: Session = Depends(get_db))->list[Sabh
     return [SabhaResponse.model_validate(sabha) for sabha in sabhas_pydanticmodel]
 
 @router.get("/{sabha_id}")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def get_sabha(request: Request, sabha_id: int, db: Session = Depends(get_db))->SabhaResponse:
     """Get a sabha by ID
     Args:
@@ -48,7 +48,7 @@ async def get_sabha(request: Request, sabha_id: int, db: Session = Depends(get_d
     return SabhaResponse.model_validate(sabha_pydanticmodel)
 
 @router.post("/")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+#   @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def create_sabha(request: Request, sabha: SabhaCreate, db: Session = Depends(get_db))->dict:
     """Create a new sabha
     Args:
@@ -61,7 +61,7 @@ async def create_sabha(request: Request, sabha: SabhaCreate, db: Session = Depen
     return create_new_sabha(sabha, db)
 
 @router.put("/{sabha_id}")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def update_sabha(request: Request, sabha_id: int, sabha: SabhaCreate, db: Session = Depends(get_db))->dict:
     """Update a sabha by ID
     Args:
@@ -75,7 +75,7 @@ async def update_sabha(request: Request, sabha_id: int, sabha: SabhaCreate, db: 
     return update_sabha_by_id(sabha_id, sabha, db)
 
 @router.delete("/{sabha_id}")
-@authorize([UserRole.ADMIN])
+# @authorize([UserRole.ADMIN])
 async def delete_sabha(request: Request, sabha_id: int, db: Session = Depends(get_db))->dict:
     """Delete a sabha by ID
     Args:
