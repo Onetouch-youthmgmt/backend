@@ -1,6 +1,8 @@
 fastapi
 uvicorn
+gunicorn
 sqlalchemy
+psycopg2-binary
 pydantic
 python-dotenv
 python-jose

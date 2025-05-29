@@ -6,11 +6,18 @@ from fastapi import Depends
 from typing import Annotated
 
 load_dotenv()
-DATABASE_URL = "sqlite:///onetouch.db"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-connect_args = {"check_same_thread": False}
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set")
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+# For render DB
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# connect_args = {"check_same_thread": False}
+
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
