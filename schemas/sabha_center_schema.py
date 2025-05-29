@@ -5,7 +5,7 @@ class SabhaCenterBase(BaseModel):
     address: str
     responsible_person: str
     contact_number: str
-
+    name: str
 class SabhaCenterCreate(SabhaCenterBase):
     pass
 

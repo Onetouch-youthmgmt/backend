@@ -28,7 +28,9 @@ def create_new_sabha_center(sabha_center: SabhaCenterCreate, db:Session):
             city = sabha_center.city,
             address = sabha_center.address,
             responsible_person = sabha_center.responsible_person,
-            contact_number = sabha_center.contact_number)   
+            contact_number = sabha_center.contact_number,
+            name = sabha_center.name
+        )   
         db.add(new_sabha_center)
         db.commit()
         db.refresh(new_sabha_center)
@@ -46,6 +48,7 @@ def update_sabha_center_by_id(sabha_center_id: int, sabha_center: SabhaCenterCre
         sabha_center_to_update.address = sabha_center.address
         sabha_center_to_update.responsible_person = sabha_center.responsible_person
         sabha_center_to_update.contact_number = sabha_center.contact_number
+        sabha_center_to_update.name = sabha_center.name
         db.commit()
         db.refresh(sabha_center_to_update)
         return {"message": f"Sabha center in {sabha_center.city} updated successfully"} 

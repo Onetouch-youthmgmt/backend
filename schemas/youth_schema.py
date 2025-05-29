@@ -2,6 +2,8 @@
 from pydantic import BaseModel
 from datetime import date, datetime
 
+from schemas.sabha_center_schema import SabhaCenterResponse
+
 
 class YouthBase(BaseModel):
     first_name: str
@@ -15,12 +17,14 @@ class YouthBase(BaseModel):
     karyakarta_id: int
     educational_field: str
     created_at: datetime
+
 class YouthCreate(YouthBase):
+    sabha_center_ids: list[int]
     pass
 
 class YouthResponse(YouthBase):
     id: int
-
+    sabha_centers: list[SabhaCenterResponse]
     class ConfigDict:
         from_attributes = True
 

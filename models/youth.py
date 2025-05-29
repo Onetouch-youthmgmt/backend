@@ -1,8 +1,17 @@
 from datetime import  datetime
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Date, Integer
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Date, Integer, Table
 from database.database import Base
 from sqlalchemy.orm import relationship
 from models.attendance import Attendance
+from models.sabha_center import SabhaCenter
+
+youth_sabha_center_association = Table(
+    "youth_sabha_center_association",
+    Base.metadata,
+    Column("youth_id", Integer, ForeignKey("youths.id")),
+    Column("sabha_center_id", Integer, ForeignKey("sabha_centers.id")),
+)
+
 class Youth(Base):
     __tablename__ = "youths"
 
@@ -22,6 +31,10 @@ class Youth(Base):
     ## FK to the Karyakarta
     karyakarta_id = Column(Integer, ForeignKey('karyakartas.id'), nullable=True)
     karyakarta = relationship("Karyakarta", back_populates="managed_youths")
+
+    ## mtom relationship with sabha_center
+    sabha_centers=relationship("SabhaCenter", secondary="youth_sabha_center_association", back_populates="youths")
+    
 
     # relationship with attendances
     youth_attendances = relationship("Attendance", back_populates="youth")
