@@ -37,7 +37,7 @@ class Youth(Base):
     
 
     # relationship with attendances
-    youth_attendances = relationship("Attendance", back_populates="youth")
+    # youth_attendances = relationship("Attendance", back_populates="youth")
 
     def __repr__(self):
         return f"Youth( last_name={self.last_name}, email={self.email},first_name={self.first_name} )"

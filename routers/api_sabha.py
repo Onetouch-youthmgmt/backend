@@ -22,8 +22,13 @@ async def get_sabhas(request: Request, db: Session = Depends(get_db))->list[Sabh
         db: Database session
     Returns:
         List of SabhaResponse objects
+    Query Parameters:
+        sabha_center_id: ID of the sabha center to filter sabhas
     """
-    sabhas = get_all_sabhas(db)
+    sabha_center_id = request.query_params.get("sabha_center_id")
+    if not sabha_center_id:
+        raise HTTPException(status_code=400, detail="sabha_center_id is required")
+    sabhas = get_all_sabhas(sabha_center_id, db)
     sabhas_pydanticmodel = [sqlalchemy_to_pydantic_dict(sabha) for sabha in sabhas]
     return [SabhaResponse.model_validate(sabha) for sabha in sabhas_pydanticmodel]
 

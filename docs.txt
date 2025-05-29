@@ -80,3 +80,10 @@ sabha model
     "speaker_name": "Raj Waghela and Bhupendra Sharma",
     "date": "2021-01-01",
 }
+{
+    "topic": "Sabha 2",
+    "sabha_center_id": 2,
+    "speaker_name": "Mananbhai and Manojbhai",
+    "date": "2021-01-01",
+}
+
