@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 @router.post("/")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 def login(form_data:OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(Karyakarta).filter(Karyakarta.email == form_data.username).first()
 

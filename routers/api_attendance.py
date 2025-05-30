@@ -15,12 +15,12 @@ router = APIRouter(
 
 
 @router.get("/")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def get_attendance(request: Request, db: Session = Depends(get_db)):
     return {"message": "Attendance created successfully"}
     
 @router.post("/")
-@authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
+# @authorize([UserRole.ADMIN, UserRole.KARYAKARTA])
 async def create_attendance(request: Request, attendance: AttendanceCreate, db: Session = Depends(get_db)):
 
     return attendance_service.create_or_update_attendance(attendance, db)
