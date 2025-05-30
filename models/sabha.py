@@ -15,7 +15,7 @@ class Sabha(Base):
     sabha_center = relationship("SabhaCenter", back_populates="sabhas")
 
     # relationship with attendances
-    # sabha_attendances = relationship("Attendance", back_populates="sabha")
+    sabha_attendances = relationship("Attendance", back_populates="sabha")
 
 
     def __repr__(self):
