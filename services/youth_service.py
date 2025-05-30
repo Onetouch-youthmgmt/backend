@@ -7,7 +7,7 @@ from schemas.youth_schema import YouthCreate
 
 def get_all_youths(sabha_center_id, db:Session):
     try:
-        youths = db.query(Youth).filter(Youth.is_active == True and Youth.sabha_centers.any(SabhaCenter.id == sabha_center_id)).all()
+        youths = db.query(Youth).filter(Youth.is_active == True).filter(Youth.sabha_centers.any(SabhaCenter.id == sabha_center_id)).all()
         return youths
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting youths: {str(e)}")
