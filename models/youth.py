@@ -26,11 +26,15 @@ class Youth(Base):
     created_at = Column(DateTime, default=datetime.now)
     is_active = Column(Boolean, default=True)
     educational_field = Column(String, nullable=True)
+    is_karyakarta = Column(Boolean, default=False)
 
 
     ## FK to the Karyakarta
-    karyakarta_id = Column(Integer, ForeignKey('karyakartas.id'), nullable=True)
-    karyakarta = relationship("Karyakarta", back_populates="managed_youths")
+    karyakarta_id = Column(Integer, ForeignKey('youths.id'), nullable=True)
+    karyakarta = relationship("Youth", remote_side=[id], back_populates="managed_youths")
+
+    # youth managed by KK
+    managed_youths = relationship("Youth", back_populates="karyakarta", cascade="all, delete-orphan")   
 
     ## mtom relationship with sabha_center
     sabha_centers=relationship("SabhaCenter", secondary="youth_sabha_center_association", back_populates="youths")

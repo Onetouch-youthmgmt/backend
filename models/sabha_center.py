@@ -14,11 +14,13 @@ class SabhaCenter(Base):
     responsible_person = Column(String, nullable=False)
     contact_number = Column(String, nullable=False)
 
+    ## relationship with sabha youth
+    youths=relationship("Youth", secondary="youth_sabha_center_association", back_populates="sabha_centers")
+
     # relationship with sabhas
     sabhas = relationship("Sabha", back_populates="sabha_center")
 
-    ## relationship with sabha youth
-    youths=relationship("Youth", secondary="youth_sabha_center_association", back_populates="sabha_centers")
+
 
     def __repr__(self):
         return f"<SabhaCenter id={self.id} city={self.city})>"

@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-from startup import create_admin_user
 from database.database import Base, engine, get_db
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,14 +9,8 @@ from fastapi import Depends
 # Create the database tables
 Base.metadata.create_all(bind=engine)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    db = next(get_db())
-    create_admin_user(db)
-    yield
 
 app = FastAPI(
-    lifespan=lifespan,
     title="OneTouch App",
     description="Youth management App",
     version="1.0.0",

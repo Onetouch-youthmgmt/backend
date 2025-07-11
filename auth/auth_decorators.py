@@ -3,7 +3,6 @@ from fastapi import Depends, HTTPException, Request
 from database.database import get_db
 from auth.auth import ALGORITHM_FOR_TOKEN, SECRET_KEY_FOR_TOKEN
 from jose import jwt, JWTError
-from models.karyakarta import Karyakarta
 from functools import wraps
 from fastapi.security import HTTPBearer
 

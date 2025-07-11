@@ -8,12 +8,11 @@ from sqlalchemy.orm import Session
 
 
 def create_or_update_attendance(attendance: AttendanceCreate, db: Session):
-
-    sabha = db.query(Sabha).filter(Sabha.id == attendance.sabha_id).first()
-    if not sabha:
-        raise HTTPException(status_code=404, detail="Sabha not found")
-    
     try:
+
+        sabha = db.query(Sabha).filter(Sabha.id == attendance.sabha_id).first()
+        if not sabha:
+            raise HTTPException(status_code=404, detail="Sabha not found")
         attendance_data = attendance.attendance_data
 
         # create a list of youth_ids
@@ -59,10 +58,24 @@ def create_or_update_attendance(attendance: AttendanceCreate, db: Session):
         return {"message": f"Attendance for {sabha.sabha_center.city} and {sabha.topic} created successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
 
+def get_attendance_by_sabha_id(sabha_id: int, db: Session):
+
+    try:
+
+        sabha = db.query(Sabha).filter(Sabha.id == sabha_id).first()
+        if not sabha:
+            raise HTTPException(status_code=404, detail="Sabha not found")
+
+        attendance = db.query(Attendance).filter(Attendance.sabha_id == sabha_id, Attendance.is_present ==True).all()
+
+        if not attendance:
+            raise HTTPException(status_code=404, detail="Attendance not found for the given sabha_id")
         
-
+        present_youths = [att.youth_id for att in attendance]
+        return {"present_youth_ids" :present_youths}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 

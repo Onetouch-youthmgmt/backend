@@ -20,3 +20,9 @@ class AttendanceResponse(AttendanceBase):
     
     class ConfigDict:
         from_attributes = True
+
+class AttendanceBySabhaListResponse(BaseModel):
+    present_youth_ids: list[int]
+
+    class ConfigDict:
+        from_attributes = True

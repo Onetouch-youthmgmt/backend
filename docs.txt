@@ -29,10 +29,11 @@ youth model
     "origin_city_india": "Mumbai",
     "current_city_germany": "Magdeburg",
     "educational_field": "data science",
-    "karyakarta_id": 1,
     "is_active": true,
     "created_at": "2021-01-01",
-    "sabha_center_ids": [1,2]
+    "sabha_center_ids": [1,2],
+    "is_karyakarta":"true",
+    "karyakarta_id":null
 }
 {
  "first_name": "Bhupendra",
@@ -43,10 +44,11 @@ youth model
     "origin_city_india": "Mumbai",
     "current_city_germany": "Magdeburg",
     "educational_field": "Accounting",
-    "karyakarta_id": 1,
     "is_active": true,
     "created_at": "2021-01-01",
-    "sabha_center_ids": [1,2, 3]
+    "sabha_center_ids": [1,2, 3],
+    "is_karyakarta":"true",
+    "karyakarta_id":"1"
 }
 
 
