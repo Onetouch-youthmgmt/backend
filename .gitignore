@@ -43,3 +43,17 @@ logs/
 # Database
 onetouch.db
 docker-compose.override.yml
+
+# Alembic temporary files
+alembic/versions/__pycache__/
+alembic/__pycache__/
+alembic.ini
+script.py.mako  
+
+# Docker
+.docker/
+docker-volumes/
+
+# Temporary files
+tmp/
+temp/
