@@ -1,6 +1,6 @@
 from sqlalchemy import UUID
 from services.utility import sqlalchemy_to_pydantic_dict
-from services.youth_service import create_new_youth, deactivate_youth, get_all_youths, get_youth_by_id, get_youths_by_karyakarta_id, update_youth_by_id
+from services.youth_service import create_new_youth, deactivate_or_delete_youth, get_all_youths, get_youth_by_id, get_youths_by_karyakarta_id, update_youth_by_id
 from schemas.youth_schema import YouthCreate, YouthKaryakartaResponse, YouthResponse
 from models.youth import Youth
 from enums.user import UserRole
@@ -90,7 +90,7 @@ async def get_youths(request: Request, karyakarta_id: int, db: Session = Depends
     return [YouthKaryakartaResponse.model_validate(youth) for youth in karyakarta_followedup_youths]
 
 @router.delete('/{youth_id}')
-async def deactivate_youth_by_id(request: Request, youth_id: int, db: Session = Depends(get_db))->dict:
+async def deactivate_or_delete_youth_by_id(request: Request, youth_id: int, db: Session = Depends(get_db))->dict:
     """Deactivate a youth by ID
     Args:
         request: FastAPI Request object
@@ -99,7 +99,8 @@ async def deactivate_youth_by_id(request: Request, youth_id: int, db: Session = 
     Returns:    
         message that the youth is deactivated successfully with the youth's first and last name
     """
-    return deactivate_youth(youth_id, db)
+    is_permanant_deletion = request.query_params.get("is_permanant_deletion", "false").lower() == "true"
+    return deactivate_or_delete_youth(youth_id, db, is_permanant_deletion)
 
 @router.post('/')
 async def create_youth(request: Request, youth: YouthCreate, db: Session = Depends(get_db))->dict:

@@ -6,6 +6,7 @@ class SabhaBase(BaseModel):
     speaker_name: str
     date: date
     sabha_center_id: int
+    food: str
 class SabhaCreate(SabhaBase):
     pass
 

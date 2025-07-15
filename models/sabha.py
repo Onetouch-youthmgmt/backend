@@ -9,6 +9,7 @@ class Sabha(Base):
     topic = Column(String, nullable=False)
     speaker_name = Column(String, nullable=False)
     date = Column(Date, nullable=False)
+    food = Column(String, nullable=False)
 
     # FK sabha_center_id
     sabha_center_id = Column(Integer, ForeignKey('sabha_centers.id'), nullable=False)

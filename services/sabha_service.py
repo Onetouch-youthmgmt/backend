@@ -29,7 +29,8 @@ def create_new_sabha(sabha:SabhaCreate, db:Session):
             topic = sabha.topic,
             speaker_name = sabha.speaker_name,
             date = sabha.date,
-            sabha_center_id = sabha.sabha_center_id)    
+            food = sabha.food,
+            sabha_center_id = sabha.sabha_center_id)  
         db.add(new_sabha)
         db.commit()
         db.refresh(new_sabha)
@@ -50,6 +51,7 @@ def update_sabha_by_id(sabha_id:int, sabha:SabhaCreate, db:Session):
         sabha_to_update.speaker_name = sabha.speaker_name
         sabha_to_update.date = sabha.date
         sabha_to_update.sabha_center_id = sabha.sabha_center_id
+        sabha_to_update.food = sabha.food
         db.commit()
         db.refresh(sabha_to_update)
         return {"message": f"Sabha with topic {sabha.topic} and for date {sabha.date} updated successfully"}

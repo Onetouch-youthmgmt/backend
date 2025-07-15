@@ -61,18 +61,21 @@ def create_new_youth(youth: YouthCreate, db:Session):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new youth: {str(e)}")
    
-def deactivate_youth(youth_id: int, db:Session):
-
-
+def deactivate_or_delete_youth(youth_id: int, db:Session, is_permanant_deletion: bool = False):
     try:
         youth = db.query(Youth).filter(Youth.id == youth_id).first()
         if not youth:
             raise HTTPException(status_code=404, detail="Youth not found")
-
-        youth.is_active = False
-        db.commit()
-        db.refresh(youth)
-        return {"message": f"Youth {youth.first_name} {youth.last_name} deactivated successfully"}
+        
+        if is_permanant_deletion:
+            db.delete(youth)
+            db.commit()
+            return {"message": f"Youth {youth.first_name} {youth.last_name  } deleted permanently"}
+        else :
+            youth.is_active = False
+            db.commit()
+            db.refresh(youth)
+            return {"message": f"Youth {youth.first_name} {youth.last_name} deactivated successfully"}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error deactivating youth: {str(e)}")
@@ -120,7 +123,7 @@ def get_youths_by_karyakarta_id(karyakarta_id: int, db: Session):
         karyakarta = db.query(Youth).filter(Youth.id == karyakarta_id).first()
         if not karyakarta:
             raise HTTPException(status_code=404, detail="Karyakarta not found")
-        youths = [{"id": youth.id, "name": f"{youth.first_name} {youth.last_name}"} for youth in karyakarta.managed_youths]
+        youths = [{"id": youth.id, "name": f"{youth.first_name} {youth.last_name}", "created_date": youth.created_at } for youth in karyakarta.managed_youths]
         return youths
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting youths by karyakarta id: {str(e)}")

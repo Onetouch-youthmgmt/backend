@@ -33,6 +33,7 @@ class YouthResponse(YouthBase):
 class YouthKaryakartaResponse(BaseModel):
     id: int
     name: str
+    created_at: datetime
 
     class ConfigDict:
         from_attributes = True

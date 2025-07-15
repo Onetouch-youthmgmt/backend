@@ -55,7 +55,7 @@ def create_or_update_attendance(attendance: AttendanceCreate, db: Session):
 
         db.commit()
 
-        return {"message": f"Attendance for {sabha.sabha_center.city} and {sabha.topic} created successfully"}
+        return {"message": f"Attendance for {sabha.sabha_center.city} and {sabha.topic} modified successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
