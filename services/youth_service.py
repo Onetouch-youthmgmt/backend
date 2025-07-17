@@ -3,11 +3,26 @@ from models.youth import Youth
 from fastapi import  HTTPException
 from sqlalchemy.orm import Session
 from schemas.youth_schema import YouthCreate
+from services.utility import sqlalchemy_to_pydantic_dict
 
 def get_all_youths(sabha_center_id, db:Session):
     try:
         youths = db.query(Youth).filter(Youth.is_active == True, Youth.sabha_centers.any(SabhaCenter.id == sabha_center_id)).all()
-        return youths
+
+        youth_with_karyakarta_info = []
+        for youth in youths:
+            youth_dict = sqlalchemy_to_pydantic_dict(youth)
+            
+            # Add karyakarta information
+            if youth.karyakarta_id:
+                followup_karyakarta = db.query(Youth).filter(Youth.id == youth.karyakarta_id).first()
+                youth_dict['karyakarta_name'] = f"{followup_karyakarta.first_name} {followup_karyakarta.last_name}" if followup_karyakarta else None
+            else:
+                youth_dict['karyakarta_name'] = None
+                
+            youth_with_karyakarta_info.append(youth_dict)
+            
+        return youth_with_karyakarta_info
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting youths: {str(e)}")
     
@@ -16,7 +31,14 @@ def get_youth_by_id(youth_id: int, db:Session):
         youth = db.query(Youth).filter(Youth.id == youth_id).filter(Youth.is_active == True).first()
         if not youth:
             raise HTTPException(status_code=404, detail="Youth not found")
-        return youth
+        youth_dict = sqlalchemy_to_pydantic_dict(youth)
+        # Add karyakarta information
+        if youth.karyakarta_id: 
+            followup_karyakarta = db.query(Youth).filter(Youth.id == youth.karyakarta_id).first()
+            youth_dict['karyakarta_name'] = f"{followup_karyakarta.first_name} {followup_karyakarta.last_name}" if followup_karyakarta else None
+        else:
+            youth_dict['karyakarta_name'] = None
+        return youth_dict
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting youth by id: {str(e)}")
 
@@ -46,7 +68,9 @@ def create_new_youth(youth: YouthCreate, db:Session):
             is_active = True,
             is_karyakarta = youth.is_karyakarta,
             karyakarta_id = youth.karyakarta_id,
-            educational_field = youth.educational_field
+            educational_field = youth.educational_field,
+            address = youth.address,
+            pin_code = youth.pin_code,
         )
 
         ## add mtom relationship
@@ -61,24 +85,17 @@ def create_new_youth(youth: YouthCreate, db:Session):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating new youth: {str(e)}")
    
-def deactivate_or_delete_youth(youth_id: int, db:Session, is_permanant_deletion: bool = False):
+def delete_youth_by_id(youth_id: int, db:Session):
     try:
         youth = db.query(Youth).filter(Youth.id == youth_id).first()
         if not youth:
             raise HTTPException(status_code=404, detail="Youth not found")
-        
-        if is_permanant_deletion:
-            db.delete(youth)
-            db.commit()
-            return {"message": f"Youth {youth.first_name} {youth.last_name  } deleted permanently"}
-        else :
-            youth.is_active = False
-            db.commit()
-            db.refresh(youth)
-            return {"message": f"Youth {youth.first_name} {youth.last_name} deactivated successfully"}
+        db.delete(youth)
+        db.commit()
+        return {"message": f"Youth {youth.first_name} {youth.last_name  } deleted permanently"}
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Error deactivating youth: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error deleting youth: {str(e)}")
  
 def update_youth_by_id(youth_id: int, youth: YouthCreate, db:Session):
 
@@ -105,6 +122,8 @@ def update_youth_by_id(youth_id: int, youth: YouthCreate, db:Session):
         youth_to_update.karyakarta_id = youth.karyakarta_id
         youth_to_update.is_active = youth.is_active
         youth_to_update.is_karyakarta = youth.is_karyakarta
+        youth_to_update.address = youth.address | None
+        youth_to_update.pin_code = youth.pin_code
 
         ## add mtom relationship
         ## it will remove old sabha centers and add new ones
