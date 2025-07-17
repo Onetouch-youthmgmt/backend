@@ -27,6 +27,8 @@ class Youth(Base):
     is_active = Column(Boolean, default=True)
     educational_field = Column(String, nullable=True)
     is_karyakarta = Column(Boolean, default=False)
+    address = Column(String, nullable=True)
+    pin_code = Column(String, nullable=True)
 
 
     ## FK to the Karyakarta

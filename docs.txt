@@ -89,3 +89,15 @@ sabha model
     "date": "2021-01-01",
 }
 
+To run Migration
+1. docker compose exec backend alembic revision --autogenerate -m "Add users table"
+
+Adjust the migration file for update
+No changes locally will be reflected
+
+2. docker compose exec backend alembic upgrade head
+
+changes locally will be reflected
+
+for prod in render shell do
+3. alembic upgrade head

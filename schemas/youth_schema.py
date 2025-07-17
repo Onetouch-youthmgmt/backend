@@ -19,6 +19,8 @@ class YouthBase(BaseModel):
     created_at: datetime
     is_karyakarta: bool
     karyakarta_id: Optional[int]=None
+    address: Optional[str] = None
+    pin_code: Optional[str] = None
 
 
 class YouthCreate(YouthBase):
@@ -27,13 +29,14 @@ class YouthCreate(YouthBase):
 class YouthResponse(YouthBase):
     id: int
     sabha_centers: list[SabhaCenterResponse]
+    karyakarta_name: Optional[str] = None
     class ConfigDict:
         from_attributes = True
 
 class YouthKaryakartaResponse(BaseModel):
     id: int
     name: str
-    created_at: datetime
+    created_date: datetime
 
     class ConfigDict:
         from_attributes = True
