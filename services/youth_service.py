@@ -122,8 +122,8 @@ def update_youth_by_id(youth_id: int, youth: YouthCreate, db:Session):
         youth_to_update.karyakarta_id = youth.karyakarta_id
         youth_to_update.is_active = youth.is_active
         youth_to_update.is_karyakarta = youth.is_karyakarta
-        youth_to_update.address = youth.address | None
-        youth_to_update.pin_code = youth.pin_code
+        youth_to_update.address = youth.address if youth.address else None
+        youth_to_update.pin_code = youth.pin_code if youth.pin_code else None
 
         ## add mtom relationship
         ## it will remove old sabha centers and add new ones
