@@ -56,10 +56,9 @@ async def get_all_karyakarta(request: Request, db: Session = Depends(get_db))->l
             detail="sabha_center_id query parameter is required"
         )
     youths = get_all_youths(sabha_center_id, db)
-    karyakarta_youths = [youth for youth in youths if youth.is_karyakarta]
+    karyakarta_youths = [youth for youth in youths if youth.get('is_karyakarta', False)]
 
-    karyakarta_youths_pydanticmodel = [sqlalchemy_to_pydantic_dict(youth) for youth in karyakarta_youths]
-    return [YouthResponse.model_validate(karyakarta) for karyakarta in karyakarta_youths_pydanticmodel]
+    return [YouthResponse.model_validate(karyakarta) for karyakarta in karyakarta_youths]
 
 @router.get("/{youth_id}")
 async def get_youth(request: Request, youth_id: int, db: Session = Depends(get_db))->YouthResponse:
