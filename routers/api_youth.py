@@ -1,4 +1,5 @@
 from sqlalchemy import UUID
+from auth.auth import verify_jwt_token
 from services.utility import sqlalchemy_to_pydantic_dict
 from services.youth_service import create_new_youth, delete_youth_by_id, get_all_youths, get_youth_by_id, get_youths_by_karyakarta_id, update_youth_by_id
 from schemas.youth_schema import YouthCreate, YouthKaryakartaResponse, YouthResponse
@@ -11,6 +12,7 @@ from database.database import get_db
 router = APIRouter(
     prefix="/youths",
     tags=["youths"],
+     dependencies=[Depends(verify_jwt_token)],
 )
 
 @router.get("/")

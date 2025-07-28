@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from auth.auth import verify_jwt_token
 from database.database import Base, engine, get_db
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +15,7 @@ app = FastAPI(
     title="OneTouch App",
     description="Youth management App",
     version="1.0.0",
+    dependencies=[Depends(verify_jwt_token)]  # <-- Add your auth dependency here
 )
 
 origins = [

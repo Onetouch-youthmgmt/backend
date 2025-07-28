@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
 from sqlalchemy.orm import Session
+from auth.auth import verify_jwt_token
 from enums.user import UserRole
 from services.utility import sqlalchemy_to_pydantic_dict
 from services.sabha_service import create_new_sabha, delete_sabha_by_id, get_all_sabhas, get_sabha_by_id, update_sabha_by_id
@@ -10,6 +11,7 @@ from schemas.sabha_schema import SabhaCreate, SabhaResponse
 router = APIRouter(
     prefix="/sabhas",
     tags=["sabhas"],
+     dependencies=[Depends(verify_jwt_token)],
 )
 
 @router.get("/")

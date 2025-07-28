@@ -1,6 +1,7 @@
 
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
+from auth.auth import verify_jwt_token
 from services.utility import sqlalchemy_to_pydantic_dict
 from services.sabha_center_service import get_all_sabha_centers, get_sabha_center_by_id, create_new_sabha_center, update_sabha_center_by_id, delete_sabha_center_by_id
 from database.database import get_db
@@ -11,6 +12,7 @@ from schemas.sabha_center_schema import SabhaCenterCreate, SabhaCenterResponse
 router = APIRouter(
     prefix="/sabha_centers",
     tags=["sabha_centers"],
+    dependencies=[Depends(verify_jwt_token)],  
 )
 
 
