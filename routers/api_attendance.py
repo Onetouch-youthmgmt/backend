@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
+from auth.auth import verify_jwt_token
 from services import attendance_service
 from schemas.attendance_schema import AttendanceBySabhaListResponse, AttendanceCreate
 from database.database import get_db
@@ -8,6 +9,7 @@ from enums.user import UserRole
 router = APIRouter(
     prefix="/attendance",
     tags=["attendance"],
+     dependencies=[Depends(verify_jwt_token)],
 )
 
 
