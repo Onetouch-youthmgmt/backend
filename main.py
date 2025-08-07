@@ -20,8 +20,8 @@ app = FastAPI(
 
 origins = [
     "http://localhost:5173",
-    "https://one-touch-frontend.vercel.app/",
-    "https://onetouchpro.app/"
+    "https://onetouch-backend-mi70.onrender.com",
+    "https://onetouchpro.app"
     ]
 
 app.add_middleware(    
