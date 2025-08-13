@@ -55,3 +55,4 @@ docker-volumes/
 # Temporary files
 tmp/
 temp/
+print_token.py

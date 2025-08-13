@@ -2,20 +2,21 @@ import os
 from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, Request
 from jose import jwt
+from jwt import PyJWKClient
 import requests
 
 
 
 load_dotenv()
-ZITADEL_JWKS_URL = os.getenv("ZITADEL_JWKS_URL")
-ZITADEL_AUDIENCE = os.getenv("ZITADEL_AUDIENCE")
-ZITADEL_ISSUER = os.getenv("ZITADEL_ISSUER")
+# ZITADEL_JWKS_URL = os.getenv("ZITADEL_JWKS_URL")
+# ZITADEL_AUDIENCE = os.getenv("ZITADEL_AUDIENCE")
+# ZITADEL_ISSUER = os.getenv("ZITADEL_ISSUER")
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
+AUTH0_API_AUDIENCE = os.getenv("AUTH0_API_AUDIENCE")
+ALGORITHMS = ["RS256"]
 
-
-def get_jwks():
-    response = requests.get(ZITADEL_JWKS_URL)
-    response.raise_for_status()
-    return response.json()
+# Caceh for JWKS
+jwks_client = PyJWKClient(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
 
 
 def verify_jwt_token(request: Request):
@@ -24,17 +25,21 @@ def verify_jwt_token(request: Request):
         raise HTTPException(status_code=401, detail="Authorization header missing")
 
     token = auth_header.split(" ")[1]
-    jwks = get_jwks()
     
     try:
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
+
         payload = jwt.decode(
             token,
-            jwks,
-            algorithms=["RS256"],
-            audience=ZITADEL_AUDIENCE,
-            issuer=ZITADEL_ISSUER,
-            options={"verify_at_hash": False}  # Add this line to disable at_hash verification
+            signing_key.key,
+            algorithms=ALGORITHMS,
+            audience=AUTH0_API_AUDIENCE,
+            issuer=f"https://{AUTH0_DOMAIN}/"
         )
         return payload
-    except jwt.JWTError as e:
-        raise HTTPException(status_code=401, detail=str(e)) from e
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.JWTClaimsError:
+        raise HTTPException(status_code=401, detail="Invalid claims")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")

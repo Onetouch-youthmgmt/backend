@@ -14,3 +14,5 @@ alembic
 asyncpg 
 python-jose
 requests
+PyJWT
+cryptography

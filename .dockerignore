@@ -46,3 +46,4 @@ LICENSE
 tmp/
 temp/
 .cache/
+print_token.py
