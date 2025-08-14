@@ -56,3 +56,4 @@ docker-volumes/
 tmp/
 temp/
 print_token.py
+*.dump
