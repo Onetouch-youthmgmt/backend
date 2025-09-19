@@ -17,8 +17,8 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 
 # connect_args = {"check_same_thread": False}
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(DATABASE_URL, pool_size=10, max_overflow=5,pool_timeout=60, pool_recycle=1800)
+SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 
 
 Base = declarative_base()

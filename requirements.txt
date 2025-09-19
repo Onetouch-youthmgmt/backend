@@ -5,14 +5,8 @@ sqlalchemy
 psycopg2-binary
 pydantic
 python-dotenv
-python-jose
-passlib
-bcrypt
-python-multipart
 debugpy
 alembic
-asyncpg 
-python-jose
+asyncpg
 requests
-PyJWT
-cryptography
+clerk_backend_api

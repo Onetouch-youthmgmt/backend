@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 class SabhaCenter(Base):
     __tablename__ = "sabha_centers"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     address = Column(String, nullable=False)
     city = Column(String, nullable=False)

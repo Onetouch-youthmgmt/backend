@@ -1,45 +1,28 @@
 import os
-from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, Request
-from jose import jwt
-from jwt import PyJWKClient
-import requests
-
-
+from clerk_backend_api import Clerk
+from clerk_backend_api.security import authenticate_request
+from clerk_backend_api.security.types import AuthenticateRequestOptions
+from dotenv import load_dotenv
 
 load_dotenv()
-# ZITADEL_JWKS_URL = os.getenv("ZITADEL_JWKS_URL")
-# ZITADEL_AUDIENCE = os.getenv("ZITADEL_AUDIENCE")
-# ZITADEL_ISSUER = os.getenv("ZITADEL_ISSUER")
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
-AUTH0_API_AUDIENCE = os.getenv("AUTH0_API_AUDIENCE")
-ALGORITHMS = ["RS256"]
 
-# Caceh for JWKS
-jwks_client = PyJWKClient(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
 
+CLERK_API_KEY = os.getenv('CLERK_API_KEY')
+print("CLERK_API_KEY:", CLERK_API_KEY)
+CLERK_AUTHORIZED_PARTY = os.getenv("CLERK_AUTHORIZED_PARTY", "http://localhost:5173/")
 
 def verify_jwt_token(request: Request):
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    token = auth_header.split(" ")[1]
-    
-    try:
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
-
-        payload = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=ALGORITHMS,
-            audience=AUTH0_API_AUDIENCE,
-            issuer=f"https://{AUTH0_DOMAIN}/"
-        )
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.JWTClaimsError:
-        raise HTTPException(status_code=401, detail="Invalid claims")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    """
+    Dependency to verify Clerk token from Authorization header or __session cookie.
+    Returns request_state if signed in, else raises HTTPException 401.
+    """
+    sdk = Clerk(bearer_auth=CLERK_API_KEY)
+    options = AuthenticateRequestOptions(
+        authorized_parties=["http://localhost:5173/"],
+        clock_skew_in_ms=60000  
+    )
+    request_state = sdk.authenticate_request(request, options)
+    if not request_state.is_signed_in:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return request_state

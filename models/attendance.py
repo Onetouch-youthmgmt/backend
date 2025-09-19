@@ -8,11 +8,11 @@ class Attendance(Base):
     id = Column(Integer, primary_key=True)
 
     # FK to the Sabha
-    sabha_id = Column(Integer, ForeignKey('sabhas.id'), nullable=False)
+    sabha_id = Column(Integer, ForeignKey('sabhas.id'), nullable=False, index=True)
     sabha = relationship("Sabha", back_populates="sabha_attendances")
 
     # FK to the Youth
-    youth_id = Column(Integer, ForeignKey('youths.id'), nullable=True)
+    youth_id = Column(Integer, ForeignKey('youths.id'), nullable=True, index=True)
     youth = relationship("Youth", back_populates="youth_attendances")
 
     is_present = Column(Boolean, default=False)

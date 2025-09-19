@@ -1,5 +1,5 @@
 from datetime import  datetime
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Date, Integer, Table
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Date, Integer, Table, Index
 from database.database import Base
 from sqlalchemy.orm import relationship
 from models.attendance import Attendance
@@ -12,19 +12,22 @@ youth_sabha_center_association = Table(
     Column("sabha_center_id", Integer, ForeignKey("sabha_centers.id")),
 )
 
+Index('ix_youth_sabha_center_association_youth_id', youth_sabha_center_association.c.youth_id)
+Index('ix_youth_sabha_center_association_sabha_center_id', youth_sabha_center_association.c.sabha_center_id)
+
 class Youth(Base):
     __tablename__ = "youths"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    email = Column(String,unique=True, nullable=False)
+    email = Column(String,unique=True, nullable=False, index=True)
     origin_city_india = Column(String, nullable=False)
     current_city_germany = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
     birth_date = Column(Date, nullable=False)
-    created_at = Column(DateTime, default=datetime.now)
-    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.now, index=True)
+    is_active = Column(Boolean, default=True, index=True)
     educational_field = Column(String, nullable=True)
     is_karyakarta = Column(Boolean, default=False)
     address = Column(String, nullable=True)
@@ -32,7 +35,7 @@ class Youth(Base):
 
 
     ## FK to the Karyakarta
-    karyakarta_id = Column(Integer, ForeignKey('youths.id'), nullable=True)
+    karyakarta_id = Column(Integer, ForeignKey('youths.id'), nullable=True, index=True)
     karyakarta = relationship("Youth", remote_side=[id], back_populates="managed_youths")
 
     # youth managed by KK
