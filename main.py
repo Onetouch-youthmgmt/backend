@@ -21,7 +21,7 @@ origins = [
     "http://localhost:5173",
     "https://backend-s8fi.onrender.com",
     "https://onetouchpro.app",
-    "https://www.onetouchpro.app"
+    "https://www.onetouchpro.app",
      "https://api.onetouchpro.app"
     ]
 
