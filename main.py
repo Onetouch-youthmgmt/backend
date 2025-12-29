@@ -19,7 +19,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost:5173",
-    "https://onetouch-backend-mi70.onrender.com",
+    "https://backend-s8fi.onrender.com",
     "https://onetouchpro.app",
      "https://api.onetouchpro.app"
     ]
