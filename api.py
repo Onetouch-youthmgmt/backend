@@ -6,4 +6,4 @@ def register_routers(app: FastAPI):
     app.include_router(api_sabha_center_router, prefix="/api", tags=["sabha_centers"])
     app.include_router(api_sabha_router, prefix="/api", tags=["sabhas"])
     app.include_router(api_attendance_router, prefix="/api", tags=["attendance"])
-    app.include_router(api_health_router, prefix="/api", tags=["health"])
+    app.include_router(api_health_router, prefix="", tags=["health"])

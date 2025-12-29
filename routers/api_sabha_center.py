@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
-from auth.auth import verify_jwt_token
+from auth.auth import verify_jwt_token, require_admin
 from services.utility import sqlalchemy_to_pydantic_dict
 from services.sabha_center_service import get_all_sabha_centers, get_sabha_center_by_id, create_new_sabha_center, update_sabha_center_by_id, delete_sabha_center_by_id
 from database.database import get_db
@@ -49,6 +49,7 @@ async def create_sabha_center(request: Request, sabha_center: SabhaCenterCreate,
     Args:
         request: FastAPI Request object
         sabha_center: SabhaCenterCreate object
+        auth: Auth dict from require_admin dependency auth: dict = Depends(require_admin)
         db: Database session
     Returns:
         message that the sabha center is created successfully with the sabha center's city
@@ -69,11 +70,12 @@ async def update_sabha_center(request: Request, sabha_center_id: int, sabha_cent
     return update_sabha_center_by_id(sabha_center_id, sabha_center, db)
 
 @router.delete("/{sabha_center_id}")
-async def delete_sabha_center(request: Request, sabha_center_id: int, db: Session = Depends(get_db))->dict:
+async def delete_sabha_center(request: Request, sabha_center_id: int,  db: Session = Depends(get_db))->dict:
     """Delete a sabha center by ID
     Args:
         request: FastAPI Request object
         sabha_center_id: ID of the sabha center to delete
+        auth: Auth dict from require_admin dependency auth: dict = Depends(require_admin)
         db: Database session
     Returns:
         message that the sabha center is deleted successfully with the sabha center's city

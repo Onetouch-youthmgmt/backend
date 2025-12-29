@@ -1,5 +1,5 @@
 from sqlalchemy import UUID
-from auth.auth import verify_jwt_token
+from auth.auth import verify_jwt_token, require_admin
 from services.utility import sqlalchemy_to_pydantic_dict
 from services.youth_service import create_new_youth, delete_youth_by_id, get_all_youths, get_youth_by_id, get_youths_by_karyakarta_id, update_youth_by_id
 from schemas.youth_schema import YouthCreate, YouthKaryakartaResponse, YouthResponse
@@ -94,6 +94,7 @@ async def delete_youth(request: Request, youth_id: int, db: Session = Depends(ge
     Args:
         request: FastAPI Request object
         youth_id: ID of the youth to deactivate
+        auth: Auth dict from require_admin dependency  auth: dict = Depends(require_admin)
         db: Database session
     Returns:    
         message that the youth is deactivated successfully with the youth's first and last name

@@ -20,7 +20,5 @@ class SabhaCenter(Base):
     # relationship with sabhas
     sabhas = relationship("Sabha", back_populates="sabha_center")
 
-
-
     def __repr__(self):
         return f"<SabhaCenter id={self.id} city={self.city})>"
