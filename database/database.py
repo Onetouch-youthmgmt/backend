@@ -17,8 +17,8 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 
 # connect_args = {"check_same_thread": False}
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(DATABASE_URL, pool_size=3, max_overflow=2,pool_timeout=30)
+SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 
 
 Base = declarative_base()
@@ -29,5 +29,4 @@ def get_db():
         yield db
     finally:
         db.close()
-
 dbSession = Annotated[Session, Depends(get_db)]

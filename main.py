@@ -15,13 +15,13 @@ app = FastAPI(
     title="OneTouch App",
     description="Youth management App",
     version="1.0.0",
-    dependencies=[Depends(verify_jwt_token)]  # <-- Add your auth dependency here
 )
 
 origins = [
     "http://localhost:5173",
     "https://onetouch-backend-mi70.onrender.com",
-    "https://onetouchpro.app"
+    "https://onetouchpro.app",
+     "https://api.onetouchpro.app"
     ]
 
 app.add_middleware(    

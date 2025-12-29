@@ -43,6 +43,7 @@ logs/
 # Database
 onetouch.db
 docker-compose.override.yml
+generate-clerk-token.sh
 
 # Alembic temporary files
 alembic/versions/__pycache__/
@@ -55,3 +56,5 @@ docker-volumes/
 # Temporary files
 tmp/
 temp/
+print_token.py
+*.dump

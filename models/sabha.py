@@ -5,14 +5,14 @@ from models.attendance import Attendance
 class Sabha(Base):
     __tablename__ = "sabhas"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     topic = Column(String, nullable=False)
     speaker_name = Column(String, nullable=False)
     date = Column(Date, nullable=False)
     food = Column(String, nullable=False)
 
     # FK sabha_center_id
-    sabha_center_id = Column(Integer, ForeignKey('sabha_centers.id'), nullable=False)
+    sabha_center_id = Column(Integer, ForeignKey('sabha_centers.id'), nullable=False, index=True)
     sabha_center = relationship("SabhaCenter", back_populates="sabhas")
 
     # relationship with attendances

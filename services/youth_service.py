@@ -102,8 +102,8 @@ def update_youth_by_id(youth_id: int, youth: YouthCreate, db:Session):
     try:
         if youth.karyakarta_id is not None:
             karyakarta_youth = db.query(Youth).filter(Youth.id == youth.karyakarta_id).first()
-        if not karyakarta_youth:
-            raise HTTPException(status_code=404, detail="Karyakarta not found")
+            if not karyakarta_youth:
+                raise HTTPException(status_code=404, detail="Karyakarta not found")
         sabha_center_ids = youth.sabha_center_ids
         sabha_centers = db.query(SabhaCenter).filter(SabhaCenter.id.in_(sabha_center_ids)).all()
         if not sabha_centers:
