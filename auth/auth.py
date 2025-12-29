@@ -27,6 +27,9 @@ def verify_jwt_token(request: Request):
     Verify request with Clerk SDK; if signed-out, include debug info and
     """
 
+    # Allow OPTIONS preflight requests to pass through without authentication
+    if request.method == "OPTIONS":
+        return {"user_id": None, "role": None}  # ← Fixed the syntax error here
     try:
         options = AuthenticateRequestOptions(
         # authorized_parties=auth_parties,
