@@ -1,32 +1,13 @@
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session, declarative_base
 from dotenv import load_dotenv
-from fastapi import Depends
-from typing import Annotated
+from supabase import create_client, Client
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
 
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
 
-# For render DB
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+if not SUPABASE_URL or not SUPABASE_SECRET_KEY:
+    raise ValueError("SUPABASE_URL and SUPABASE_SECRET_KEY must be set")
 
-# connect_args = {"check_same_thread": False}
-
-engine = create_engine(DATABASE_URL, pool_size=3, max_overflow=2,pool_timeout=30)
-SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
-
-
-Base = declarative_base()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-dbSession = Annotated[Session, Depends(get_db)]
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SECRET_KEY)

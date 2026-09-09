@@ -1,6 +1,4 @@
-from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, Request
-from database.database import get_db
 from auth.auth import ALGORITHM_FOR_TOKEN, SECRET_KEY_FOR_TOKEN
 from jose import jwt, JWTError
 from functools import wraps

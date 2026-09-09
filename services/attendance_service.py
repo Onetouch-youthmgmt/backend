@@ -1,81 +1,56 @@
 from fastapi import HTTPException
-from models.attendance import Attendance
-from models.youth import Youth
-from models.sabha import Sabha
 from schemas.attendance_schema import AttendanceCreate
-from sqlalchemy.orm import Session
+from database.database import supabase
 
 
-
-def create_or_update_attendance(attendance: AttendanceCreate, db: Session):
+def create_or_update_attendance(attendance: AttendanceCreate):
     try:
-
-        sabha = db.query(Sabha).filter(Sabha.id == attendance.sabha_id).first()
-        if not sabha:
+        sabha_response = supabase.table("sabhas").select("*, sabha_centers(city)").eq("id", attendance.sabha_id).execute()
+        if not sabha_response.data:
             raise HTTPException(status_code=404, detail="Sabha not found")
+        sabha = sabha_response.data[0]
+
         attendance_data = attendance.attendance_data
+        youth_ids = [att.youth_id for att in attendance_data]
 
-        # create a list of youth_ids
-        youth_ids = [att.youth_id for att in attendance_data] 
+        existing_youths = supabase.table("youths").select("id").in_("id", youth_ids).execute()
+        existing_youth_ids = {youth["id"] for youth in existing_youths.data}
 
-        # validating wether youth ids are present in the youth table
-        existing_youths = db.query(Youth).filter(Youth.id.in_(youth_ids)).all()
-        existing_youths_ids = {youth.id for youth in existing_youths}
-
-        # youth ids that are not present in the youth table for the given sent ids
-        invalid_youth_ids = set(youth_ids) - existing_youths_ids
+        invalid_youth_ids = set(youth_ids) - existing_youth_ids
         if invalid_youth_ids:
             raise HTTPException(status_code=404, detail=f"Youth IDs not found: {', '.join(map(str, invalid_youth_ids))}")
 
+        rows = [
+            {
+                "sabha_id": attendance.sabha_id,
+                "youth_id": att_data.youth_id,
+                "is_present": att_data.is_present,
+            }
+            for att_data in attendance_data
+        ]
+        supabase.table("attendances").upsert(rows, on_conflict="sabha_id,youth_id").execute()
 
-        # fetch existing attendance for the youth ids
-        existing_attendance = db.query(Attendance).filter(
-            Attendance.youth_id.in_(youth_ids),
-            Attendance.sabha_id == sabha.id
-        ).all()
-
-        existing_attendance_map = {att.youth_id: att for att in existing_attendance}
-        result = []
-
-        for att_data in attendance_data:
-            if att_data.youth_id in existing_attendance_map:
-                # update the attendance
-                existing_record = existing_attendance_map[att_data.youth_id]
-                existing_record.is_present = att_data.is_present
-                result.append(existing_record)
-            else:
-                # create a new attendance
-                new_attendance = Attendance(
-                    sabha_id = sabha.id,
-                    youth_id = att_data.youth_id,
-                    is_present = att_data.is_present
-                )
-                db.add(new_attendance)
-                result.append(new_attendance)
-
-        db.commit()
-
-        return {"message": f"Attendance for {sabha.sabha_center.city} and {sabha.topic} modified successfully"}
+        sabha_center_city = sabha["sabha_centers"]["city"] if sabha.get("sabha_centers") else ""
+        return {"message": f"Attendance for {sabha_center_city} and {sabha['topic']} modified successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def get_attendance_by_sabha_id(sabha_id: int, db: Session):
-
+def get_attendance_by_sabha_id(sabha_id: int):
     try:
-
-        sabha = db.query(Sabha).filter(Sabha.id == sabha_id).first()
-        if not sabha:
+        sabha = supabase.table("sabhas").select("id").eq("id", sabha_id).execute()
+        if not sabha.data:
             raise HTTPException(status_code=404, detail="Sabha not found")
 
-        attendance = db.query(Attendance).filter(Attendance.sabha_id == sabha_id, Attendance.is_present ==True).all()
+        attendance = supabase.table("attendances").select("youth_id").eq("sabha_id", sabha_id).eq("is_present", True).execute()
 
-        if not attendance:
+        if not attendance.data:
             raise HTTPException(status_code=404, detail="Attendance not found for the given sabha_id")
-        
-        present_youths = [att.youth_id for att in attendance]
-        return {"present_youth_ids" :present_youths}
+
+        present_youths = [att["youth_id"] for att in attendance.data]
+        return {"present_youth_ids": present_youths}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
