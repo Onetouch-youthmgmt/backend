@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from database.database import get_db
-from sqlalchemy import text
+from fastapi import APIRouter
+from database.database import supabase
 
 router = APIRouter(
     prefix="/health",
@@ -9,10 +7,9 @@ router = APIRouter(
 )
 
 @router.get("/")
-async def health_check(db: Session = Depends(get_db)):
+async def health_check():
     try:
-        # Execute a simple query to check database connection
-        db.execute(text("SELECT 1"))
+        supabase.table("sabha_centers").select("id").limit(1).execute()
         return {"status": "healthy", "database": "connected"}
     except Exception as e:
         return {"status": "unhealthy", "database": "disconnected", "error": str(e)}

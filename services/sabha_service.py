@@ -1,72 +1,74 @@
-from models.sabha_center import SabhaCenter
-from schemas.sabha_schema import SabhaCreate, SabhaResponse
-from models.sabha import Sabha
+from schemas.sabha_schema import SabhaCreate
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
+from database.database import supabase
 
-def get_all_sabhas(sabha_center_id:int, db:Session):
+
+def get_all_sabhas(sabha_center_id: int):
     try:
-        sabhas = db.query(Sabha).filter(Sabha.sabha_center_id == sabha_center_id).all()
-        return sabhas
+        response = supabase.table("sabhas").select("*").eq("sabha_center_id", sabha_center_id).execute()
+        return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting sabhas: {str(e)}")
 
-def get_sabha_by_id(sabha_id:int, db:Session):
+def get_sabha_by_id(sabha_id: int):
     try:
-        sabha = db.query(Sabha).filter(Sabha.id == sabha_id).first()
-        if not sabha:
+        response = supabase.table("sabhas").select("*").eq("id", sabha_id).execute()
+        if not response.data:
             raise HTTPException(status_code=404, detail="Sabha not found")
-        return sabha
+        return response.data[0]
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting sabha by id: {str(e)}")
 
-def create_new_sabha(sabha:SabhaCreate, db:Session):
+def create_new_sabha(sabha: SabhaCreate):
     try:
-        sabha_center = db.query(SabhaCenter).filter(SabhaCenter.id == sabha.sabha_center_id).first()
-        if not sabha_center:
+        sabha_center = supabase.table("sabha_centers").select("id").eq("id", sabha.sabha_center_id).execute()
+        if not sabha_center.data:
             raise HTTPException(status_code=404, detail="Sabha center not found")
-        new_sabha = Sabha(
-            topic = sabha.topic,
-            speaker_name = sabha.speaker_name,
-            date = sabha.date,
-            food = sabha.food,
-            sabha_center_id = sabha.sabha_center_id)  
-        db.add(new_sabha)
-        db.commit()
-        db.refresh(new_sabha)
-        return {"sabha_id": new_sabha.id, "message": f"Sabha with topic {sabha.topic} and for date {sabha.date} created successfully"}
+        response = supabase.table("sabhas").insert({
+            "topic": sabha.topic,
+            "speaker_name": sabha.speaker_name,
+            "date": sabha.date.isoformat(),
+            "food": sabha.food,
+            "sabha_center_id": sabha.sabha_center_id,
+        }).execute()
+        new_sabha = response.data[0]
+        return {"sabha_id": new_sabha["id"], "message": f"Sabha with topic {sabha.topic} and for date {sabha.date} created successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error creating sabha: {str(e)}")
 
-def update_sabha_by_id(sabha_id:int, sabha:SabhaCreate, db:Session):
+def update_sabha_by_id(sabha_id: int, sabha: SabhaCreate):
     try:
-        sabha_to_update = db.query(Sabha).filter(Sabha.id == sabha_id).first()
-        if not sabha_to_update:
+        existing = supabase.table("sabhas").select("id").eq("id", sabha_id).execute()
+        if not existing.data:
             raise HTTPException(status_code=404, detail="Sabha not found for update")
-        sabha_center = db.query(SabhaCenter).filter(SabhaCenter.id == sabha.sabha_center_id).first()
-        if not sabha_center:
+        sabha_center = supabase.table("sabha_centers").select("id").eq("id", sabha.sabha_center_id).execute()
+        if not sabha_center.data:
             raise HTTPException(status_code=404, detail="Sabha center not found")
-        sabha_to_update.topic = sabha.topic
-        sabha_to_update.speaker_name = sabha.speaker_name
-        sabha_to_update.date = sabha.date
-        sabha_to_update.sabha_center_id = sabha.sabha_center_id
-        sabha_to_update.food = sabha.food
-        db.commit()
-        db.refresh(sabha_to_update)
+        supabase.table("sabhas").update({
+            "topic": sabha.topic,
+            "speaker_name": sabha.speaker_name,
+            "date": sabha.date.isoformat(),
+            "sabha_center_id": sabha.sabha_center_id,
+            "food": sabha.food,
+        }).eq("id", sabha_id).execute()
         return {"message": f"Sabha with topic {sabha.topic} and for date {sabha.date} updated successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error updating sabha: {str(e)}")
 
-def delete_sabha_by_id(sabha_id:int, db:Session):
+def delete_sabha_by_id(sabha_id: int):
     try:
-        sabha_to_delete = db.query(Sabha).filter(Sabha.id == sabha_id).first()
-        if not sabha_to_delete:
+        existing = supabase.table("sabhas").select("topic, date").eq("id", sabha_id).execute()
+        if not existing.data:
             raise HTTPException(status_code=404, detail="Sabha not found for deletion")
-        db.delete(sabha_to_delete)
-        db.commit()
-        return {"message": f"Sabha with topic {sabha_to_delete.topic} and for date {sabha_to_delete.date} deleted successfully"}
+        supabase.table("sabhas").delete().eq("id", sabha_id).execute()
+        return {"message": f"Sabha with topic {existing.data[0]['topic']} and for date {existing.data[0]['date']} deleted successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=500, detail=f"Error deleting sabha: {str(e)}")

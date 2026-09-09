@@ -1,20 +1,21 @@
 from contextlib import asynccontextmanager
-from auth.auth import verify_jwt_token
-from database.database import Base, engine, get_db
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import register_routers
-from fastapi import Depends
+from scheduler import start_scheduler, stop_scheduler
 
 
-# Create the database tables
-Base.metadata.create_all(bind=engine)
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler()
+    yield
+    stop_scheduler()
 
 app = FastAPI(
     title="OneTouch App",
     description="Youth management App",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 origins = [
