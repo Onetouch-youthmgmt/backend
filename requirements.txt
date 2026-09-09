@@ -5,7 +5,6 @@ pydantic
 python-dotenv
 debugpy
 requests
-clerk_backend_api
 supabase
 python-jose
 apscheduler
