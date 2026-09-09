@@ -6,8 +6,8 @@ load_dotenv()
 
 DEFAULT_CORS_ORIGINS = [
     "http://localhost:5173",
-    "https://onetouchpro.de",
-    "https://www.onetouchpro.de",
+    "https://ontouchpro.de",
+    "https://www.ontouchpro.de",
 ]
 
 
