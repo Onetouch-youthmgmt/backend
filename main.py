@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import register_routers
+from config import get_cors_origins
 from scheduler import start_scheduler, stop_scheduler
 
 
@@ -18,17 +19,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-origins = [
-    "http://localhost:5173",
-    "https://backend-s8fi.onrender.com",
-    "https://onetouchpro.app",
-    "https://www.onetouchpro.app",
-     "https://api.onetouchpro.app"
-    ]
-
-app.add_middleware(    
+app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],)
