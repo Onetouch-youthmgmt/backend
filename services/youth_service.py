@@ -88,21 +88,18 @@ def create_new_youth(youth: YouthCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating new youth: {str(e)}")
 
-def _delete_youth_cascade(youth_id: int):
-    """Mirrors the previous SQLAlchemy `cascade="all, delete-orphan"` on managed_youths:
-    deleting a karyakarta also deletes the youths they manage, recursively."""
-    managed = supabase.table("youths").select("id").eq("karyakarta_id", youth_id).execute()
-    for managed_youth in managed.data:
-        _delete_youth_cascade(managed_youth["id"])
-    supabase.table("youth_sabha_center_association").delete().eq("youth_id", youth_id).execute()
-    supabase.table("youths").delete().eq("id", youth_id).execute()
-
 def delete_youth_by_id(youth_id: int):
     try:
         youth = supabase.table("youths").select("first_name, last_name").eq("id", youth_id).execute()
         if not youth.data:
             raise HTTPException(status_code=404, detail="Youth not found")
-        _delete_youth_cascade(youth_id)
+
+        # Unassign (rather than delete) any youths this person managed as a
+        # karyakarta, so deleting one person never cascades into deleting others.
+        supabase.table("youths").update({"karyakarta_id": None}).eq("karyakarta_id", youth_id).execute()
+
+        supabase.table("youth_sabha_center_association").delete().eq("youth_id", youth_id).execute()
+        supabase.table("youths").delete().eq("id", youth_id).execute()
         return {"message": f"Youth {youth.data[0]['first_name']} {youth.data[0]['last_name']} deleted permanently"}
     except HTTPException:
         raise
